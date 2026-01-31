@@ -283,77 +283,100 @@ export function ItemDetail({
               </Card>
             ) : (
               sortedTransactions.map((transaction) => (
-                <Card key={transaction.id}>
-                  <CardContent className='pt-6'>
-                    <div className='flex items-start gap-3'>
+                <Card key={transaction.id} className='overflow-hidden'>
+                  <CardContent className='p-0'>
+                    {/* Top Section: Type indicator bar + Main content */}
+                    <div className='flex'>
+                      {/* Colored side indicator */}
                       <div
-                        className={`p-2 rounded-lg ${
-                          transaction.type === "in" ? "bg-green-100" : "bg-red-100"
+                        className={`w-1.5 shrink-0 ${
+                          transaction.type === "in" ? "bg-green-500" : "bg-red-500"
                         }`}
-                      >
-                        {transaction.type === "in" ? (
-                          <ArrowDownToLine className='w-5 h-5 text-green-600' />
-                        ) : (
-                          <ArrowUpFromLine className='w-5 h-5 text-red-600' />
-                        )}
-                      </div>
-                      <div className='flex-1'>
-                        <div className='flex items-start justify-between mb-2'>
-                          <div>
-                            <p className='font-semibold text-gray-900'>
-                              {transaction.type === "in" ? "Stock In" : "Stock Out"}
-                            </p>
-                            <p
-                              className={`text-lg font-bold ${
-                                transaction.type === "in" ? "text-green-600" : "text-red-600"
+                      />
+
+                      <div className='flex-1 p-4'>
+                        {/* Header: Icon, Type, Quantity, Actions */}
+                        <div className='flex items-center justify-between gap-2'>
+                          <div className='flex items-center gap-3'>
+                            <div
+                              className={`p-2 rounded-full ${
+                                transaction.type === "in" ? "bg-green-100" : "bg-red-100"
                               }`}
                             >
-                              {transaction.type === "in" ? "+" : "-"}
-                              {transaction.quantity} {item.unit}
-                            </p>
-                          </div>
-                          <div className='flex items-start gap-2'>
-                            <div className='text-right'>
-                              <div className='flex items-center gap-1 text-sm text-gray-600'>
-                                <Calendar className='w-4 h-4' />
-                                {transaction.timestamp.toLocaleDateString()}
-                              </div>
-                              <p className='text-xs text-gray-500 mt-1'>
-                                {transaction.timestamp.toLocaleTimeString()}
+                              {transaction.type === "in" ? (
+                                <ArrowDownToLine className='w-4 h-4 text-green-600' />
+                              ) : (
+                                <ArrowUpFromLine className='w-4 h-4 text-red-600' />
+                              )}
+                            </div>
+                            <div>
+                              <p className='text-sm font-medium text-gray-600'>
+                                {transaction.type === "in" ? "Stock In" : "Stock Out"}
+                              </p>
+                              <p
+                                className={`text-xl font-bold leading-tight ${
+                                  transaction.type === "in" ? "text-green-600" : "text-red-600"
+                                }`}
+                              >
+                                {transaction.type === "in" ? "+" : "-"}
+                                {transaction.quantity} {item.unit}
                               </p>
                             </div>
-                            <div className='flex gap-1'>
-                              <Button
-                                variant='ghost'
-                                size='sm'
-                                className='h-8 w-8 p-0'
-                                onClick={() => openEditDialog(transaction)}
-                              >
-                                <Edit className='w-4 h-4 text-blue-600' />
-                              </Button>
-                              <Button
-                                variant='ghost'
-                                size='sm'
-                                className='h-8 w-8 p-0'
-                                onClick={() => setDeletingTransactionId(transaction.id)}
-                              >
-                                <Trash2 className='w-4 h-4 text-red-600' />
-                              </Button>
-                            </div>
+                          </div>
+
+                          {/* Action buttons */}
+                          <div className='flex items-center gap-1'>
+                            <Button
+                              variant='ghost'
+                              size='sm'
+                              className='h-9 w-9 p-0 rounded-full hover:bg-blue-50'
+                              onClick={() => openEditDialog(transaction)}
+                            >
+                              <Edit className='w-4 h-4 text-blue-600' />
+                            </Button>
+                            <Button
+                              variant='ghost'
+                              size='sm'
+                              className='h-9 w-9 p-0 rounded-full hover:bg-red-50'
+                              onClick={() => setDeletingTransactionId(transaction.id)}
+                            >
+                              <Trash2 className='w-4 h-4 text-red-600' />
+                            </Button>
                           </div>
                         </div>
-                        {transaction.personName && (
-                          <div className='flex items-center gap-1 text-sm text-gray-700 mt-2'>
-                            <User className='w-4 h-4' />
-                            <span>
-                              Released to:{" "}
-                              <span className='font-medium'>{transaction.personName}</span>
-                            </span>
-                          </div>
-                        )}
-                        {transaction.notes && (
-                          <p className='text-sm text-gray-600 mt-2 italic'>{transaction.notes}</p>
-                        )}
+
+                        {/* Details Section */}
+                        <div className='mt-3 space-y-2'>
+                          {transaction.personName && (
+                            <div className='flex items-center gap-2 text-sm text-gray-700'>
+                              <User className='w-4 h-4 text-gray-400' />
+                              <span>
+                                Released to{" "}
+                                <span className='font-medium'>{transaction.personName}</span>
+                              </span>
+                            </div>
+                          )}
+                          {transaction.notes && (
+                            <p className='text-sm text-gray-500 italic pl-6'>{transaction.notes}</p>
+                          )}
+                        </div>
+
+                        {/* Footer: Date/Time */}
+                        <div className='flex items-center gap-1.5 mt-3 pt-3 border-t border-gray-100'>
+                          <Calendar className='w-3.5 h-3.5 text-gray-400' />
+                          <span className='text-xs text-gray-500'>
+                            {transaction.timestamp.toLocaleDateString(undefined, {
+                              weekday: "short",
+                              month: "short",
+                              day: "numeric",
+                            })}
+                            {" · "}
+                            {transaction.timestamp.toLocaleTimeString(undefined, {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
