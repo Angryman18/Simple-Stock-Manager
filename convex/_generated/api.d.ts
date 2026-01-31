@@ -8,13 +8,23 @@
  * @module
  */
 
+import type * as stock from "../stock.js";
+import type * as stock_history from "../stock_history.js";
+import type * as stock_history_schema from "../stock_history_schema.js";
+import type * as stocks_schema from "../stocks_schema.js";
+
 import type {
   ApiFromModules,
   FilterApi,
   FunctionReference,
 } from "convex/server";
 
-declare const fullApi: ApiFromModules<{}>;
+declare const fullApi: ApiFromModules<{
+  stock: typeof stock;
+  stock_history: typeof stock_history;
+  stock_history_schema: typeof stock_history_schema;
+  stocks_schema: typeof stocks_schema;
+}>;
 
 /**
  * A utility for referencing Convex functions in your app's public API.

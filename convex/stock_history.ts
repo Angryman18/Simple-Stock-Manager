@@ -1,64 +1,75 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-// Get all stocks
+// Get all stock history
 export const get = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("stocks").collect();
+    return await ctx.db.query("stock_history").collect();
   },
 });
 
-// Get stocks by user ID
+// Get stock history by user ID
 export const getByUserId = query({
   args: { user_id: v.string() },
   handler: async (ctx, args) => {
     return await ctx.db
-      .query("stocks")
+      .query("stock_history")
       .filter((q) => q.eq(q.field("user_id"), args.user_id))
+      .order("desc")
       .collect();
   },
 });
 
-// Get a single stock by ID
+// Get stock history by product ID and user ID
+export const getByProductId = query({
+  args: {
+    product_id: v.id("stocks"),
+    user_id: v.string(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("stock_history")
+      .filter((q) =>
+        q.and(q.eq(q.field("product_id"), args.product_id), q.eq(q.field("user_id"), args.user_id))
+      )
+      .order("desc")
+      .collect();
+  },
+});
+
+// Get a single stock history entry by ID
 export const getById = query({
-  args: { id: v.id("stocks") },
+  args: { id: v.id("stock_history") },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.id);
   },
 });
 
-// Create a new stock
+// Create a new stock history entry
 export const create = mutation({
   args: {
-    product_name: v.string(),
+    product_id: v.id("stocks"),
     user_id: v.string(),
     created_at: v.number(),
-    updated_at: v.number(),
+    change_type: v.union(v.literal("STOCK_IN"), v.literal("STOCK_OUT")),
     quantity: v.number(),
-    stock_count: v.number(),
-    unit: v.string(),
-    price: v.number(),
+    notes: v.nullable(v.string()),
   },
   handler: async (ctx, args) => {
-    return await ctx.db.insert("stocks", args);
+    return await ctx.db.insert("stock_history", args);
   },
 });
 
-// Update a stock
+// Update a stock history entry
 export const update = mutation({
   args: {
-    id: v.id("stocks"),
-    product_name: v.optional(v.string()),
+    id: v.id("stock_history"),
     quantity: v.optional(v.number()),
-    stock_count: v.optional(v.number()),
-    unit: v.optional(v.string()),
-    price: v.optional(v.number()),
-    updated_at: v.number(),
+    notes: v.optional(v.nullable(v.string())),
   },
   handler: async (ctx, args) => {
     const { id, ...updates } = args;
-    // Remove undefined values
     const cleanUpdates = Object.fromEntries(
       Object.entries(updates).filter(([_, v]) => v !== undefined)
     );
@@ -66,25 +77,10 @@ export const update = mutation({
   },
 });
 
-// Delete a stock
+// Delete a stock history entry
 export const remove = mutation({
-  args: { id: v.id("stocks") },
+  args: { id: v.id("stock_history") },
   handler: async (ctx, args) => {
     await ctx.db.delete(args.id);
-  },
-});
-
-// Update stock count (for stock in/out operations)
-export const updateStockCount = mutation({
-  args: {
-    id: v.id("stocks"),
-    stock_count: v.number(),
-    updated_at: v.number(),
-  },
-  handler: async (ctx, args) => {
-    await ctx.db.patch(args.id, {
-      stock_count: args.stock_count,
-      updated_at: args.updated_at,
-    });
   },
 });
