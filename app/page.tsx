@@ -1,5 +1,10 @@
+import { ConvexClientProvider } from "./components/context/ConvexProvider";
 import StockManagerApp from "./StockManagerApp";
 
 export default function Home() {
-  return <StockManagerApp />;
+  return (
+    <ConvexClientProvider>
+      <StockManagerApp />
+    </ConvexClientProvider>
+  );
 }
