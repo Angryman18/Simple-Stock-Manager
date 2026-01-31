@@ -6,6 +6,7 @@ import { ItemDetail } from "./components/ItemDetail";
 import { AddStockModal } from "./components/AddStockModal";
 import { StockInModal } from "./components/StockInModal";
 import { StockOutModal } from "./components/StockOutModal";
+import { UserButtonComponent } from "./components/UserButton";
 import { toast } from "sonner";
 import { Toaster } from "./components/ui/sonner";
 
@@ -236,6 +237,7 @@ export default function StockManagerApp() {
 
   return (
     <div className='min-h-screen bg-gray-50'>
+      <UserButtonComponent />
       {selectedItemId && selectedItem ? (
         <ItemDetail
           item={selectedItem}

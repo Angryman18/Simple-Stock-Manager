@@ -10,5 +10,7 @@ export default defineSchema({
     updated_at: v.number(),
     quantity: v.number(),
     stock_count: v.number(),
+    unit: v.string(),
+    price: v.number(),
   }),
 });
